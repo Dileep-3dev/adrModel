@@ -67,6 +67,15 @@ Go to [https://colab.research.google.com](https://colab.research.google.com) and
 !pip install -q -r requirements_colab.txt
 ```
 
+> **RDKit on Colab (Python 3.12):** pip wheels for `rdkit-pypi` are not yet published for the default runtime, so the requirement is skipped automatically. The trainer still works (it simply omits RDKit descriptors). If you need RDKit, install it via Conda before this step:
+> ```python
+> !pip install -q condacolab
+> import condacolab, os
+> condacolab.install()
+> os.system('mamba install -c conda-forge rdkit=2024.03.1 -y')
+> ```
+> After Conda restarts the runtime, rerun the cloning step and continue.
+
 ---
 
 ## Step 5: Download Public Datasets
@@ -108,7 +117,6 @@ drive.mount('/content/drive')
     --data_root /content/datasets \
     --epochs 20 \
     --batch_size 64 \
-    --use_rdkit \
     --use_gpu
 ```
 
@@ -116,7 +124,7 @@ drive.mount('/content/drive')
 - `--data_root /content/datasets` → points to downloaded datasets
 - `--epochs 20` → number of training epochs (default: 10)
 - `--batch_size 64` → batch size (adjust if OOM errors occur)
-- `--use_rdkit` → enable RDKit molecular descriptors
+- `--use_rdkit` → optional; add only if you installed RDKit via Conda
 - `--use_gpu` → use Colab GPU (automatic if available)
 
 **Training time:** 30-60 minutes on Colab T4 GPU
@@ -180,7 +188,6 @@ Generate GitHub personal access token and use:
     --data_root /content/datasets \
     --epochs 20 \
     --batch_size 64 \
-    --use_rdkit \
     --use_gpu
 
 # 5. Download artifacts
