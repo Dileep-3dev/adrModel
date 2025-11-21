@@ -311,9 +311,10 @@ def load_chembl_features(root: Path, max_rows: int = 20000) -> pd.DataFrame:
         mol = Chem.MolFromSmiles(smiles) if isinstance(smiles, str) else None
         if mol is None:
             continue
+        num_rings = rdMolDescriptors.CalcNumRings(mol) if rdMolDescriptors else Chem.GetSSSR(mol)
         desc = {
             'chembl_num_atoms': float(mol.GetNumAtoms()),
-            'chembl_num_rings': float(int(Chem.GetSSSR(mol))),
+            'chembl_num_rings': float(num_rings),
             'chembl_mol_wt': float(Descriptors.MolWt(mol)),
             'chembl_logp': float(Descriptors.MolLogP(mol)),
             'chembl_tpsa': float(Descriptors.TPSA(mol)),
