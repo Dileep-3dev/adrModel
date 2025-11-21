@@ -1,0 +1,37 @@
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local datasets excluded from git
+ADRtarget-master/
+CT-ADE-main-dataset/
+DrugMeNot-main/
+Hybrid-Adverse-Drug-Reactions-Predictor-main/
+ML Clinical Trials - Galeano and Paccanaro-dataset/
+RecSys23-ADRnet-main/
+SIDER4-master-dataset/
+chemBlData/
+faersData/
+pubChemData/
+siderData/
+upload_bundle/
+
+# Large CSVs managed via Drive bundles
+drug_embeddings_data.csv
+drugs_side_effects_drugs_com.csv
+formatted_training_data.csv
+unified_adr_dataset.csv
+train.csv
+
+# Misc
+.DS_Store

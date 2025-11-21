@@ -312,11 +312,11 @@ def load_chembl_features(root: Path, max_rows: int = 20000) -> pd.DataFrame:
         if mol is None:
             continue
         desc = {
-            'chembl_num_atoms': mol.GetNumAtoms(),
-            'chembl_num_rings': Chem.GetSSSR(mol),
-            'chembl_mol_wt': Descriptors.MolWt(mol),
-            'chembl_logp': Descriptors.MolLogP(mol),
-            'chembl_tpsa': Descriptors.TPSA(mol),
+            'chembl_num_atoms': float(mol.GetNumAtoms()),
+            'chembl_num_rings': float(int(Chem.GetSSSR(mol))),
+            'chembl_mol_wt': float(Descriptors.MolWt(mol)),
+            'chembl_logp': float(Descriptors.MolLogP(mol)),
+            'chembl_tpsa': float(Descriptors.TPSA(mol)),
         }
         name = row.get(chembl_name_col)
         desc['drug_name_clean'] = normalize_name(str(name))
@@ -326,13 +326,14 @@ def load_chembl_features(root: Path, max_rows: int = 20000) -> pd.DataFrame:
         return pd.DataFrame()
     logging.info("Computed RDKit descriptors for %d molecules", len(records))
     df_desc = pd.DataFrame(records)
-    agg = df_desc.groupby('drug_name_clean').agg({
-        'chembl_num_atoms': 'mean',
-        'chembl_num_rings': 'mean',
-        'chembl_mol_wt': 'mean',
-        'chembl_logp': 'mean',
-        'chembl_tpsa': 'mean',
-    }).reset_index()
+    numeric_cols = [
+        'chembl_num_atoms',
+        'chembl_num_rings',
+        'chembl_mol_wt',
+        'chembl_logp',
+        'chembl_tpsa',
+    ]
+    agg = df_desc.groupby('drug_name_clean')[numeric_cols].mean().reset_index()
     return agg
 
 
