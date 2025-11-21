@@ -321,8 +321,19 @@ def load_chembl_features(root: Path, max_rows: int = 20000) -> pd.DataFrame:
         name = row.get(chembl_name_col)
         desc['drug_name_clean'] = normalize_name(str(name))
         records.append(desc)
+    if not records:
+        logging.warning("No valid RDKit descriptors parsed; skipping chemistry features")
+        return pd.DataFrame()
     logging.info("Computed RDKit descriptors for %d molecules", len(records))
-    return pd.DataFrame(records)
+    df_desc = pd.DataFrame(records)
+    agg = df_desc.groupby('drug_name_clean').agg({
+        'chembl_num_atoms': 'mean',
+        'chembl_num_rings': 'mean',
+        'chembl_mol_wt': 'mean',
+        'chembl_logp': 'mean',
+        'chembl_tpsa': 'mean',
+    }).reset_index()
+    return agg
 
 
 # ---------------------------------------------------------------------------
