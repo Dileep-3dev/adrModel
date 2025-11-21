@@ -242,12 +242,21 @@ def load_drugscom_features(path: Path) -> pd.DataFrame:
         df['side_effects'].fillna('') + ' ' +
         df['medical_condition_description'].fillna('')
     )
-    cols = [
-        'drug_name_clean', 'rating', 'no_of_reviews', 'activity_pct', 'rx_otc',
-        'pregnancy_category', 'drug_classes', 'side_effects_text',
-        'medical_condition', 'medical_condition_description'
-    ]
-    return df[cols]
+    # Aggregate per drug to avoid duplicating label rows during feature merge.
+    agg = df.groupby('drug_name_clean').agg({
+        'rating': 'mean',
+        'no_of_reviews': 'sum',
+        'activity_pct': 'mean',
+        'rx_otc': lambda x: next((v for v in x if isinstance(v, str) and v), ''),
+        'pregnancy_category': lambda x: next((v for v in x if isinstance(v, str) and v), ''),
+        'drug_classes': lambda x: ' '.join(sorted({str(v) for v in x if isinstance(v, str)})),
+        'side_effects_text': lambda x: ' '.join(sorted({str(v) for v in x if isinstance(v, str)})),
+        'medical_condition': lambda x: ' '.join(sorted({str(v) for v in x if isinstance(v, str)})),
+        'medical_condition_description': lambda x: ' '.join(
+            sorted({str(v) for v in x if isinstance(v, str)})
+        ),
+    }).reset_index()
+    return agg
 
 
 def load_sider_features(root: Path) -> pd.DataFrame:
